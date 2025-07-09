@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const userModel = require('../models/userModel');
+const authService = require('../services/authService'); // importar o serviço
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
@@ -11,6 +12,11 @@ module.exports = async (req, res, next) => {
   }
 
   const token = authHeader.split(' ')[1];
+
+  // Verifica se o token está na blacklist
+  if (authService.isTokenBlacklisted && authService.isTokenBlacklisted(token)) {
+    return res.status(401).json({ message: 'Token inválido (logout realizado).' });
+  }
 
   try {
     const decoded = jwt.verify(token, JWT_SECRET);

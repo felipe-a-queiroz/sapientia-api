@@ -8,6 +8,8 @@ if (!JWT_SECRET) {
   throw new Error('A variável de ambiente JWT_SECRET não está definida.');
 }
 
+const tokenBlacklist = [];
+
 exports.registerUser = async (username, email, password) => {
   const existingUserByEmail = await userModel.findUserByEmail(email);
   if (existingUserByEmail) {
@@ -44,4 +46,13 @@ exports.loginUser = async (username, password) => {
   });
 
   return { token };
+};
+
+exports.logoutUser = async (token) => {
+  tokenBlacklist.push(token);
+};
+
+// Função utilitária para verificar se o token está na blacklist
+exports.isTokenBlacklisted = (token) => {
+  return tokenBlacklist.includes(token);
 };

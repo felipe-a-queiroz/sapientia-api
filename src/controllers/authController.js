@@ -34,3 +34,17 @@ exports.login = async (req, res) => {
 exports.getProfile = (req, res) => {
     res.json({ message: `Bem-vindo ao seu perfil, ${req.user.username} (ID: ${req.user.id})` });
 };
+
+exports.logout = async (req, res) => {
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(400).json({ message: 'Token não fornecido.' });
+  }
+  const token = authHeader.split(' ')[1];
+  try {
+    await authService.logoutUser(token);
+    return res.json({ message: 'Logout realizado com sucesso!' });
+  } catch (error) {
+    return res.status(400).json({ message: error.message });
+  }
+};

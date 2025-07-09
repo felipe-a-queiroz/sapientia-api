@@ -15,6 +15,7 @@ router.get('/health', (req, res) => {
 // Rotas de Autenticação
 router.post('/register', authController.register);
 router.post('/login', authController.login);
+router.post('/logout', authMiddleware, authController.logout);
 
 // Rota protegida de exemplo
 router.get('/profile', authMiddleware, authController.getProfile);
