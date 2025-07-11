@@ -1,48 +1,54 @@
 # Sapientia API
 
-API RESTful em Node.js usando Express, com autenticação JWT e persistência de dados em MariaDB. Projetada para ser executada localmente ou como uma função AWS Lambda.
+A RESTful API built with Node.js using Express, featuring JWT authentication and data persistence with MariaDB. Designed to run locally or as an AWS Lambda function.
 
-## Estrutura do Projeto
+## Project Structure
 
-- `src/` - Código-fonte da aplicação
-  - `config/` - Arquivos de configuração (ex: conexão com banco de dados).
-  - `controllers/` - Lógica dos controladores, responsáveis por lidar com as requisições e respostas HTTP.
-  - `middlewares/` - Middlewares customizados (ex: logger, validação de token JWT).
-  - `models/` - Camada de acesso a dados, contendo as queries para o banco de dados.
-  - `routes/` - Definição das rotas da API.
-  - `services/` - Lógica de negócio da aplicação.
-  - `utils/` - Funções utilitárias.
-- `.env.example` - Exemplo de variáveis de ambiente necessárias.
-- `.eslintrc.json` - Configuração do ESLint para padronização de código.
-- `lambda.js` - Ponto de entrada para a execução na AWS Lambda.
-- `server.js` - Ponto de entrada para a execução local do servidor.
+* `src/` – Application source code
 
-## Pré-requisitos
+  * `config/` – Configuration files (e.g., database connection)
+  * `controllers/` – Controller logic for handling HTTP requests and responses
+  * `middlewares/` – Custom middleware (e.g., logger, JWT token validation)
+  * `models/` – Data access layer containing database queries
+  * `routes/` – API route definitions
+  * `services/` – Application business logic
+  * `utils/` – Utility functions
+* `.env.example` – Example of required environment variables
+* `.eslintrc.json` – ESLint configuration for code formatting
+* `lambda.js` – Entry point for AWS Lambda deployment
+* `server.js` – Entry point for running the server locally
 
-- Node.js (v16 ou superior)
-- npm
-- MariaDB (ou MySQL)
+## Prerequisites
 
-## Como Rodar Localmente
+* Node.js (v16 or higher)
+* npm
+* MariaDB (or MySQL)
 
-1. **Clone o repositório:**
+## How to Run Locally
+
+1. **Clone the repository:**
+
    ```sh
    git clone https://github.com/felipe-a-queiroz/sapientia-api.git
    cd sapientia-api
    ```
 
-2. **Instale as dependências:**
+2. **Install dependencies:**
+
    ```sh
    npm install
    ```
 
-3. **Configure o Banco de Dados:**
-   - Certifique-se de que seu servidor MariaDB/MySQL está rodando.
-   - Crie um banco de dados. O nome padrão é `sapientia`.
+3. **Set up the Database:**
+
+   * Make sure your MariaDB/MySQL server is running.
+   * Create a database. The default name is `sapientia`.
+
      ```sql
      CREATE DATABASE sapientia;
      ```
-   - Conecte-se ao banco de dados recém-criado e execute o seguinte script SQL para criar a tabela de usuários:
+   * Connect to the new database and run the following SQL script to create the users table:
+
      ```sql
      CREATE TABLE users (
          id INT AUTO_INCREMENT PRIMARY KEY,
@@ -53,34 +59,41 @@ API RESTful em Node.js usando Express, com autenticação JWT e persistência de
      );
      ```
 
-4. **Configure as Variáveis de Ambiente:**
-   - Copie o arquivo `.env.example` para um novo arquivo chamado `.env`.
+4. **Configure Environment Variables:**
+
+   * Copy the `.env.example` file to a new file named `.env`:
+
      ```sh
      cp .env.example .env
      ```
-   - Edite o arquivo `.env` e preencha as variáveis, especialmente `JWT_SECRET` e as credenciais do banco de dados (`DB_HOST`, `DB_USER`, `DB_PASSWORD`, `DB_NAME`).
+   * Edit the `.env` file and fill in the variables, especially `JWT_SECRET` and the database credentials (`DB_HOST`, `DB_USER`, `DB_PASSWORD`, `DB_NAME`).
 
-5. **Inicie o servidor:**
-   - Para rodar em modo de desenvolvimento (com hot-reload):
-   ```sh
-   npm run dev
-   ```
-   - O servidor estará rodando em `http://localhost:3000`.
+5. **Start the server:**
 
-## Endpoints da API
+   * To run in development mode (with hot-reload):
+
+     ```sh
+     npm run dev
+     ```
+   * The server will be available at `http://localhost:3000`.
+
+## API Endpoints
 
 ### Health Check
 
-- `GET /health`: Verifica o status da API.
+* `GET /health`: Checks the status of the API.
 
-### Autenticação
+### Authentication
 
-- `POST /register`: Registra um novo usuário.
-  - **Body**: `{ "username": "seu_usuario", "email": "seu@email.com", "password": "sua_senha" }`
-- `POST /login`: Realiza o login e retorna um token JWT.
-  - **Body**: `{ "username": "seu_usuario", "password": "sua_senha" }`
+* `POST /register`: Registers a new user.
 
-### Rotas Protegidas (Exemplo)
+  * **Body**: `{ "username": "your_username", "email": "your@email.com", "password": "your_password" }`
+* `POST /login`: Logs in and returns a JWT token.
 
-- `GET /profile`: Retorna as informações do perfil do usuário autenticado.
-  - **Header Requerido**: `Authorization: Bearer SEU_TOKEN_JWT`
+  * **Body**: `{ "username": "your_username", "password": "your_password" }`
+
+### Protected Routes (Example)
+
+* `GET /profile`: Returns the authenticated user's profile information.
+
+  * **Required Header**: `Authorization: Bearer YOUR_JWT_TOKEN`
