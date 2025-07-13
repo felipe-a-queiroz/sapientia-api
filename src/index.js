@@ -1,8 +1,8 @@
 // Ponto de entrada principal para Express e Lambda
-const express = require('express');
-const cors = require('cors');
-const logger = require('./middlewares/logger');
-const routes = require('./routes');
+import express from 'express';
+import cors from 'cors';
+import logger from './middlewares/logger.js';
+import routes from './routes/index.js';
 
 const app = express();
 
@@ -14,4 +14,4 @@ app.use(logger);
 // Monta as rotas da aplicação a partir do arquivo de rotas
 app.use('/', routes);
 
-module.exports = app;
+export default app;

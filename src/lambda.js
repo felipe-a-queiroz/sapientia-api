@@ -1,5 +1,5 @@
 // Adaptador para AWS Lambda
-const serverless = require('serverless-http');
-const app = require('./index');
+import serverless from 'serverless-http';
+import app from './index.js';
 
-module.exports.handler = serverless(app);
+export const handler = serverless(app);

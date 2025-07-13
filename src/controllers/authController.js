@@ -1,14 +1,15 @@
-const authService = require('../services/authService');
+import authService from '../services/authService.js';
 
-exports.register = async (req, res) => {
+/**
+ * Registro de novo usuário
+ */
+export const register = async (req, res) => {
     const { username, email, password } = req.body;
 
     if (!username || !email || !password) {
-        return res
-            .status(400)
-            .json({
-                message: 'Nome de usuário, email e senha são obrigatórios.',
-            });
+        return res.status(400).json({
+            message: 'Nome de usuário, e-mail e senha são obrigatórios.',
+        });
     }
 
     try {
@@ -18,18 +19,19 @@ exports.register = async (req, res) => {
             username: user.username,
             email: user.email,
         };
-        return res
-            .status(201)
-            .json({
-                message: 'Usuário registrado com sucesso!',
-                user: userResponse,
-            });
+        return res.status(201).json({
+            message: 'Usuário registrado com sucesso!',
+            user: userResponse,
+        });
     } catch (error) {
         return res.status(400).json({ message: error.message });
     }
 };
 
-exports.login = async (req, res) => {
+/**
+ * Login de usuário e retorno do token JWT
+ */
+export const login = async (req, res) => {
     const { username, password } = req.body;
 
     if (!username || !password) {
@@ -39,25 +41,46 @@ exports.login = async (req, res) => {
     }
 
     try {
-        const { token } = await authService.loginUser(username, password);
-        return res.json({ message: 'Login bem-sucedido!', token });
+        const { token, userPayload } = await authService.loginUser(
+            username,
+            password
+        );
+        return res.json({
+            message: 'Login bem-sucedido!',
+            token,
+            role: userPayload.role,
+        });
     } catch (error) {
         return res.status(401).json({ message: error.message });
     }
 };
 
-exports.getProfile = (req, res) => {
+/**
+ * Rota protegida de perfil
+ */
+export const getProfile = (req, res) => {
+    if (!req.user) {
+        return res.status(401).json({ message: 'Não autenticado.' });
+    }
+
     res.json({
         message: `Bem-vindo ao seu perfil, ${req.user.username} (ID: ${req.user.id})`,
+        user: req.user,
     });
 };
 
-exports.logout = async (req, res) => {
+/**
+ * Logout com invalidação do token atual
+ */
+export const logout = async (req, res) => {
     const authHeader = req.headers.authorization;
+
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
         return res.status(400).json({ message: 'Token não fornecido.' });
     }
+
     const token = authHeader.split(' ')[1];
+
     try {
         await authService.logoutUser(token);
         return res.json({ message: 'Logout realizado com sucesso!' });

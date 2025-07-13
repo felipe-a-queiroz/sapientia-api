@@ -1,11 +1,12 @@
-const express = require('express');
-const homeController = require('../controllers/homeController');
-const authController = require('../controllers/authController');
-const authMiddleware = require('../middlewares/authMiddleware');
+import express from 'express';
+import { getHome } from '../controllers/homeController.js';
+import * as authController from '../controllers/authController.js';
+import authMiddleware from '../middlewares/authMiddleware.js';
+
 const router = express.Router();
 
 // Rota principal que utiliza o homeController
-router.get('/', homeController.getHome);
+router.get('/', getHome);
 
 // Rota de Health Check
 router.get('/health', (req, res) => {
@@ -20,4 +21,4 @@ router.post('/logout', authMiddleware, authController.logout);
 // Rota protegida de exemplo
 router.get('/profile', authMiddleware, authController.getProfile);
 
-module.exports = router;
+export default router;

@@ -1,6 +1,5 @@
-// Ponto de entrada para rodar o servidor localmente
-require('dotenv').config();
-const app = require('./index');
+import 'dotenv/config';
+import app from './index.js';
 
 const PORT = process.env.PORT || 3000;
 

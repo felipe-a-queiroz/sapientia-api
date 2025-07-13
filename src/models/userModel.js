@@ -1,41 +1,44 @@
-// Conecta-se ao banco de dados e executa as queries relacionadas a usuários.
-const db = require('../config/database');
+import db from '../config/database.js';
 
-exports.findUserByEmail = async (email) => {
+const findUserByEmail = async (email) => {
+    if (!email) return null;
     const [rows] = await db.query('SELECT * FROM users WHERE email = ?', [
         email,
     ]);
-    return rows[0];
+    return rows[0] || null;
 };
 
-exports.findUserByUsername = async (username) => {
+const findUserByUsername = async (username) => {
+    if (!username) return null;
     const [rows] = await db.query('SELECT * FROM users WHERE username = ?', [
         username,
     ]);
-    return rows[0];
+    return rows[0] || null;
 };
 
-exports.findUserById = async (id) => {
+const findUserById = async (id) => {
+    if (!id) return null;
     const [rows] = await db.query('SELECT * FROM users WHERE id = ?', [id]);
-    return rows[0];
+    return rows[0] || null;
 };
 
-exports.createUser = async (userData) => {
-    const { username, email, password } = userData;
-
-    // Executa a query de inserção
+const createUser = async ({ username, email, password, role = 'user' }) => {
     const [result] = await db.query(
-        'INSERT INTO users (username, email, password) VALUES (?, ?, ?)',
-        [username, email, password]
+        'INSERT INTO users (username, email, password, role) VALUES (?, ?, ?, ?)',
+        [username, email, password, role]
     );
 
-    // Retorna o usuário recém-criado para consistência com o código anterior.
-    // O `insertId` nos dá o ID do novo registro.
-    const newUser = {
+    return {
         id: result.insertId,
         username,
         email,
+        role,
     };
+};
 
-    return newUser;
+export default {
+    findUserByEmail,
+    findUserByUsername,
+    findUserById,
+    createUser,
 };

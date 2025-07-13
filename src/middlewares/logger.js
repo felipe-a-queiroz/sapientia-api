@@ -1,5 +1,5 @@
 // Middleware simples de log
-module.exports = (req, res, next) => {
+const logger = (req, res, next) => {
     const start = Date.now();
     const { method, url } = req;
     const ip = req.ip || req.connection.remoteAddress;
@@ -18,3 +18,5 @@ module.exports = (req, res, next) => {
 
     next();
 };
+
+export default logger;
