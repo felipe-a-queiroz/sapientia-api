@@ -9,7 +9,7 @@ router.get('/', homeController.getHome);
 
 // Rota de Health Check
 router.get('/health', (req, res) => {
-  res.json({ status: 'ok' });
+    res.json({ status: 'ok' });
 });
 
 // Rotas de Autenticação
