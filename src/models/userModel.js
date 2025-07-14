@@ -36,9 +36,23 @@ const createUser = async ({ username, email, password, role = 'user' }) => {
     };
 };
 
+const updateUser = async (id, { username, email }) => {
+    const [result] = await db.query(
+        'UPDATE users SET username = ?, email = ? WHERE id = ?',
+        [username, email, id]
+    );
+
+    if (result.affectedRows === 0) {
+        throw new Error('Usuário não encontrado ou não atualizado.');
+    }
+
+    return findUserById(id);
+};  
+
 export default {
     findUserByEmail,
     findUserByUsername,
     findUserById,
     createUser,
+    updateUser,
 };

@@ -89,9 +89,39 @@ const isTokenBlacklisted = (token) => {
     return tokenBlacklist.includes(token);
 };
 
+const updateUserProfile = async (userId, username, email) => {
+    // Validações simples
+    if (!validator.isEmail(email)) {
+        throw new Error('E-mail inválido.');
+    }
+    if (!validator.isAlphanumeric(username)) {
+        throw new Error('Nome de usuário deve conter apenas letras e números.');
+    }
+    const existingUser = await userModel.findUserById(userId);
+    if (!existingUser) {
+        throw new Error('Usuário não encontrado.');
+    }
+    if (existingUser.email !== email) {
+        const existingEmailUser = await userModel.findUserByEmail(email);
+        if (existingEmailUser) {
+            throw new Error('Este e-mail já está em uso.');
+        }
+    }
+    if (existingUser.username !== username) {
+        const existingUsernameUser = await userModel.findUserByUsername(username);
+        if (existingUsernameUser) {
+            throw new Error('Este nome de usuário já está em uso.');
+        }
+    }
+    const updatedUser = await userModel.updateUser(userId, { username, email });
+    return updatedUser;
+};
+
+
 export default {
     registerUser,
     loginUser,
     logoutUser,
     isTokenBlacklisted,
+    updateUserProfile,
 };

@@ -69,6 +69,30 @@ export const getProfile = (req, res) => {
     });
 };
 
+export const updateProfile = async (req, res) => {
+    const { username, email } = req.body;
+    
+    if (!username || !email) {
+        return res.status(400).json({
+            message: 'Nome de usuário e e-mail são obrigatórios.',
+        });
+    }
+
+    try {
+        const updatedUser = await authService.updateUserProfile(
+            req.user.id,
+            username,
+            email
+        );
+        return res.json({
+            message: 'Perfil atualizado com sucesso!',
+            user: updatedUser,
+        });
+    } catch (error) {
+        return res.status(400).json({ message: error.message });
+    }
+}
+
 /**
  * Logout com invalidação do token atual
  */

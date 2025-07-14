@@ -20,5 +20,6 @@ router.post('/logout', authMiddleware, authController.logout);
 
 // Rota protegida de exemplo
 router.get('/profile', authMiddleware, authController.getProfile);
+router.put('/profile', authMiddleware, authController.updateProfile);
 
 export default router;
