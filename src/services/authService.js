@@ -108,7 +108,8 @@ const updateUserProfile = async (userId, username, email) => {
         }
     }
     if (existingUser.username !== username) {
-        const existingUsernameUser = await userModel.findUserByUsername(username);
+        const existingUsernameUser =
+            await userModel.findUserByUsername(username);
         if (existingUsernameUser) {
             throw new Error('Este nome de usuário já está em uso.');
         }
@@ -116,7 +117,6 @@ const updateUserProfile = async (userId, username, email) => {
     const updatedUser = await userModel.updateUser(userId, { username, email });
     return updatedUser;
 };
-
 
 export default {
     registerUser,

@@ -4,13 +4,13 @@ import bcrypt from 'bcryptjs';
 
 const getAllUsers = async () => {
     const users = await userModel.findAllUsers();
-    return users.map(user => ({
+    return users.map((user) => ({
         id: user.id,
         username: user.username,
         email: user.email,
         role: user.role,
     }));
-}
+};
 
 const createUser = async (username, email, password, role = 'user') => {
     // Validações simples
@@ -44,15 +44,19 @@ const createUser = async (username, email, password, role = 'user') => {
     });
 
     return newUser;
-}
+};
 
 const updateUser = async (id, { username, email, role }) => {
     if (!username || !email) {
         throw new Error('Nome de usuário e e-mail são obrigatórios.');
     }
-    const updatedUser = await userModel.updateUser(id, { username, email, role });
+    const updatedUser = await userModel.updateUser(id, {
+        username,
+        email,
+        role,
+    });
     return updatedUser;
-}
+};
 
 const deleteUser = async (id) => {
     const user = await userModel.findUserById(id);
@@ -61,11 +65,11 @@ const deleteUser = async (id) => {
     }
     await userModel.deleteUser(id);
     return { message: 'Usuário excluído com sucesso.' };
-}
+};
 
 export default {
     getAllUsers,
     createUser,
     updateUser,
     deleteUser,
-}
+};

@@ -73,7 +73,7 @@ export const getProfile = (req, res) => {
 
 export const updateProfile = async (req, res) => {
     const { username, email } = req.body;
-    
+
     if (!username || !email) {
         return res.status(400).json({
             message: 'Nome de usuário e e-mail são obrigatórios.',
@@ -93,7 +93,7 @@ export const updateProfile = async (req, res) => {
     } catch (error) {
         return res.status(400).json({ message: error.message });
     }
-}
+};
 
 /**
  * Logout com invalidação do token atual

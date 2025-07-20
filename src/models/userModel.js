@@ -24,7 +24,7 @@ const findUserById = async (id) => {
 
 const findAllUsers = async () => {
     const [rows] = await db.query('SELECT * FROM users');
-    return rows.map(user => ({
+    return rows.map((user) => ({
         id: user.id,
         username: user.username,
         email: user.email,
@@ -57,7 +57,7 @@ const updateUser = async (id, { username, email, role = 'user' }) => {
     }
 
     return findUserById(id);
-};  
+};
 
 const deleteUser = async (id) => {
     const [result] = await db.query('DELETE FROM users WHERE id = ?', [id]);

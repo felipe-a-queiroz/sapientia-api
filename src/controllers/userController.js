@@ -7,7 +7,7 @@ export const getUsers = async (req, res) => {
     } catch (error) {
         res.status(500).json({ message: 'Erro ao buscar usuários.' });
     }
-}
+};
 
 export const addUser = async (req, res) => {
     const { username, email, password, role } = req.body;
@@ -20,7 +20,12 @@ export const addUser = async (req, res) => {
     }
 
     try {
-        const user = await userService.createUser(username, email, password, roleToUse);
+        const user = await userService.createUser(
+            username,
+            email,
+            password,
+            roleToUse
+        );
         res.status(201).json({
             message: 'Usuário adicionado com sucesso!',
             user,
@@ -28,7 +33,7 @@ export const addUser = async (req, res) => {
     } catch (error) {
         res.status(400).json({ message: error.message });
     }
-}
+};
 
 export const updateUser = async (req, res) => {
     const { id } = req.params;
@@ -41,7 +46,11 @@ export const updateUser = async (req, res) => {
     }
 
     try {
-        const updatedUser = await userService.updateUser(id, { username, email, role});
+        const updatedUser = await userService.updateUser(id, {
+            username,
+            email,
+            role,
+        });
         res.json({
             message: 'Usuário atualizado com sucesso!',
             user: updatedUser,
@@ -49,7 +58,7 @@ export const updateUser = async (req, res) => {
     } catch (error) {
         res.status(400).json({ message: error.message });
     }
-}
+};
 
 export const deleteUser = async (req, res) => {
     const { id } = req.params;
@@ -60,4 +69,4 @@ export const deleteUser = async (req, res) => {
     } catch (error) {
         res.status(400).json({ message: error.message });
     }
-}
+};
