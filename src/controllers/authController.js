@@ -45,11 +45,13 @@ export const login = async (req, res) => {
             username,
             password
         );
-        return res.json({
+        const userResponse = res.json({
             message: 'Login bem-sucedido!',
             token,
-            role: userPayload.role,
+            user: userPayload,
         });
+
+        return userResponse;
     } catch (error) {
         return res.status(401).json({ message: error.message });
     }
