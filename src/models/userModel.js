@@ -22,6 +22,16 @@ const findUserById = async (id) => {
     return rows[0] || null;
 };
 
+const findAllUsers = async () => {
+    const [rows] = await db.query('SELECT * FROM users');
+    return rows.map(user => ({
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        role: user.role,
+    }));
+};
+
 const createUser = async ({ username, email, password, role = 'user' }) => {
     const [result] = await db.query(
         'INSERT INTO users (username, email, password, role) VALUES (?, ?, ?, ?)',
@@ -36,10 +46,10 @@ const createUser = async ({ username, email, password, role = 'user' }) => {
     };
 };
 
-const updateUser = async (id, { username, email }) => {
+const updateUser = async (id, { username, email, role = 'user' }) => {
     const [result] = await db.query(
-        'UPDATE users SET username = ?, email = ? WHERE id = ?',
-        [username, email, id]
+        'UPDATE users SET username = ?, email = ?, role = ? WHERE id = ?',
+        [username, email, role, id]
     );
 
     if (result.affectedRows === 0) {
@@ -49,10 +59,19 @@ const updateUser = async (id, { username, email }) => {
     return findUserById(id);
 };  
 
+const deleteUser = async (id) => {
+    const [result] = await db.query('DELETE FROM users WHERE id = ?', [id]);
+    if (result.affectedRows === 0) {
+        throw new Error('Usuário não encontrado ou não excluído.');
+    }
+};
+
 export default {
     findUserByEmail,
     findUserByUsername,
     findUserById,
+    findAllUsers,
     createUser,
     updateUser,
+    deleteUser,
 };
