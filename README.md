@@ -1,6 +1,6 @@
 # Sapientia API
 
-A RESTful API built with Node.js using Express, featuring JWT authentication and data persistence with MariaDB. Designed to run locally or as an AWS Lambda function.
+A RESTful API built with Node.js using Express, featuring JWT authentication and data persistence with MongoDB. Designed to run locally or as an AWS Lambda function.
 
 ## Project Structure
 
@@ -22,7 +22,7 @@ A RESTful API built with Node.js using Express, featuring JWT authentication and
 
 * Node.js (v16 or higher)
 * npm
-* MariaDB (or MySQL)
+* MongoDB
 
 ## How to Run Locally
 
@@ -41,23 +41,8 @@ A RESTful API built with Node.js using Express, featuring JWT authentication and
 
 3. **Set up the Database:**
 
-   * Make sure your MariaDB/MySQL server is running.
-   * Create a database. The default name is `sapientia`.
-
-     ```sql
-     CREATE DATABASE sapientia;
-     ```
-   * Connect to the new database and run the following SQL script to create the users table:
-
-     ```sql
-     CREATE TABLE users (
-         id INT AUTO_INCREMENT PRIMARY KEY,
-         username VARCHAR(50) NOT NULL UNIQUE,
-         email VARCHAR(100) NOT NULL UNIQUE,
-         password VARCHAR(255) NOT NULL,
-         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-     );
-     ```
+   * Make sure you have a MongoDB instance running, either locally or on a cloud service like MongoDB Atlas.
+   * No initial setup for tables (collections) is needed. Mongoose, the ODM used in this project, will automatically create the necessary collections based on the defined models when the application runs.
 
 4. **Configure Environment Variables:**
 
@@ -66,7 +51,7 @@ A RESTful API built with Node.js using Express, featuring JWT authentication and
      ```sh
      cp .env.example .env
      ```
-   * Edit the `.env` file and fill in the variables, especially `JWT_SECRET` and the database credentials (`DB_HOST`, `DB_USER`, `DB_PASSWORD`, `DB_NAME`).
+   * Edit the `.env` file and fill in the variables. You'll need to set `JWT_SECRET` for token generation and `MONGODB_URI` for the database connection. An example for a local database would be: `MONGODB_URI=mongodb://localhost:27017/sapientia`
 
 5. **Start the server:**
 
@@ -79,21 +64,47 @@ A RESTful API built with Node.js using Express, featuring JWT authentication and
 
 ## API Endpoints
 
-### Health Check
+Below are the available API endpoints. Routes marked with 🔒 are protected and require a JWT token in the Authorization header: `Authorization: Bearer YOUR_JWT_TOKEN`.
 
-* `GET /health`: Checks the status of the API.
+### Public Routes
 
-### Authentication
+-   **`GET /`**
+    -   Description: Returns a welcome message from the API.
+-   **`GET /health`**
+    -   Description: Checks the API status. Responds with `{ "status": "ok" }` if it's running.
 
-* `POST /register`: Registers a new user.
+### Autenticação (`/auth`)
 
-  * **Body**: `{ "username": "your_username", "email": "your@email.com", "password": "your_password" }`
-* `POST /login`: Logs in and returns a JWT token.
+-   **`POST /auth/register`**
+    -   Description: Registers a new user.
+    -   Request Body: `{ "username": "your_username", "email": "your@email.com", "password": "your_password", "role": "user" }`
+-   **`POST /auth/login`**
+    -   Description: Authenticates a user and returns a JWT.
+    -   Request Body: `{ "username": "your_username", "password": "your_password" }`
+-   **`POST /auth/logout`** 🔒
+    -   Description: Invalidates the user's JWT (adds it to the blacklist). Requires authentication.
 
-  * **Body**: `{ "username": "your_username", "password": "your_password" }`
+### User Profile (`/profile`)
 
-### Protected Routes (Example)
+-   **`GET /profile`** 🔒
+    -   Description: Returns the authenticated user's profile information. Requires authentication.
+-   **`PUT /profile`** 🔒
+    -   Description: Updates the authenticated user's information (username, email). Requires authentication.
+    -   Request Body: `{ "username": "new_username", "email": "new@email.com" }`
 
-* `GET /profile`: Returns the authenticated user's profile information.
+### User Management (`/users`)
 
-  * **Required Header**: `Authorization: Bearer YOUR_JWT_TOKEN`
+_Access to these endpoints may require administrator permissions._
+
+-   **`GET /users`** 🔒
+    -   Description: Returns a list of all users. Requires authentication.
+-   **`POST /users`** 🔒
+    -   Description: Creates a new user. Requires authentication.
+    -   Request Body: `{ "username": "another_user", "email": "another@email.com", "password": "strong_password", "role": "user" }`
+-   **`PUT /users/:id`** 🔒
+    -   Description: Updates a specific user by their ID. Requires authentication.
+    -   URL Parameters: `id` - The ID of the user to be updated.
+    -   Request Body: `{ "username": "updated_username", "email": "updated@email.com" }`
+-   **`DELETE /users/:id`** 🔒
+    -   Description: Deletes a specific user by their ID. Requires authentication.
+    -   URL Parameters: `id` - The ID of the user to be deleted.
