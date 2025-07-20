@@ -60,11 +60,16 @@ A RESTful API built with Node.js using Express, featuring JWT authentication and
      ```sh
      npm run dev
      ```
-   * The server will be available at `http://localhost:3000`.
+   * The server will be available at `http://localhost:3001`.
 
 ## API Endpoints
 
 Below are the available API endpoints. Routes marked with 🔒 are protected and require a JWT token in the Authorization header: `Authorization: Bearer YOUR_JWT_TOKEN`.
+
+### API Documentation
+
+-   **`GET /api-docs`**
+    -   Description: Renders an interactive API documentation page using Swagger UI.
 
 ### Public Routes
 
