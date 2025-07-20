@@ -1,77 +1,71 @@
-import db from '../config/database.js';
+import mongoose from 'mongoose';
+import { v4 as uuidv4 } from 'uuid';
+
+const UserSchema = new mongoose.Schema(
+    {
+        _id: { type: String, default: uuidv4 },
+        username: { type: String, required: true, unique: true, trim: true },
+        email: {
+            type: String,
+            required: true,
+            unique: true,
+            trim: true,
+            lowercase: true,
+        },
+        password: { type: String, required: true, select: false },
+        role: { type: String, enum: ['user', 'admin'], default: 'user' },
+    },
+    {
+        timestamps: true,
+        toJSON: {
+            // Transforma o _id em id e remove __v e a senha quando o objeto é serializado
+            transform: (doc, ret) => {
+                ret.id = ret._id;
+                delete ret._id;
+                delete ret.__v;
+                delete ret.password;
+                return ret;
+            },
+        },
+    }
+);
+
+const User = mongoose.model('User', UserSchema);
 
 const findUserByEmail = async (email) => {
-    if (!email) return null;
-    const [rows] = await db.query('SELECT * FROM users WHERE email = ?', [
-        email,
-    ]);
-    return rows[0] || null;
+    return await User.findOne({ email }).select('+password');
 };
 
 const findUserByUsername = async (username) => {
-    if (!username) return null;
-    const [rows] = await db.query('SELECT * FROM users WHERE username = ?', [
-        username,
-    ]);
-    return rows[0] || null;
+    return await User.findOne({ username }).select('+password');
 };
 
 const findUserById = async (id) => {
-    if (!id) return null;
-    const [rows] = await db.query('SELECT * FROM users WHERE id = ?', [id]);
-    return rows[0] || null;
+    return await User.findById(id);
+};
+
+const createUser = async (userData) => {
+    return await User.create(userData);
+};
+
+const updateUser = async (id, userData) => {
+    return await User.findByIdAndUpdate(id, userData, { new: true });
 };
 
 const findAllUsers = async () => {
-    const [rows] = await db.query('SELECT * FROM users');
-    return rows.map((user) => ({
-        id: user.id,
-        username: user.username,
-        email: user.email,
-        role: user.role,
-    }));
-};
-
-const createUser = async ({ username, email, password, role = 'user' }) => {
-    const [result] = await db.query(
-        'INSERT INTO users (username, email, password, role) VALUES (?, ?, ?, ?)',
-        [username, email, password, role]
-    );
-
-    return {
-        id: result.insertId,
-        username,
-        email,
-        role,
-    };
-};
-
-const updateUser = async (id, { username, email, role = 'user' }) => {
-    const [result] = await db.query(
-        'UPDATE users SET username = ?, email = ?, role = ? WHERE id = ?',
-        [username, email, role, id]
-    );
-
-    if (result.affectedRows === 0) {
-        throw new Error('Usuário não encontrado ou não atualizado.');
-    }
-
-    return findUserById(id);
+    return await User.find({});
 };
 
 const deleteUser = async (id) => {
-    const [result] = await db.query('DELETE FROM users WHERE id = ?', [id]);
-    if (result.affectedRows === 0) {
-        throw new Error('Usuário não encontrado ou não excluído.');
-    }
+    return await User.findByIdAndDelete(id);
 };
 
 export default {
     findUserByEmail,
     findUserByUsername,
     findUserById,
-    findAllUsers,
     createUser,
     updateUser,
+    findAllUsers,
     deleteUser,
 };

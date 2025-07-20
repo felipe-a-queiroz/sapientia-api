@@ -2,6 +2,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import validator from 'validator';
 import userModel from '../models/userModel.js';
+import userService from './userService.js';
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
@@ -15,37 +16,8 @@ const tokenBlacklist = [];
 /**
  * Registra um novo usuário após validações básicas.
  */
-const registerUser = async (username, email, password) => {
-    // Validações simples
-    if (!validator.isEmail(email)) {
-        throw new Error('E-mail inválido.');
-    }
-
-    if (!validator.isStrongPassword(password, { minLength: 8 })) {
-        throw new Error(
-            'A senha deve conter pelo menos 8 caracteres, incluindo letras maiúsculas, minúsculas, números e símbolos.'
-        );
-    }
-
-    const existingUserByEmail = await userModel.findUserByEmail(email);
-    if (existingUserByEmail) {
-        throw new Error('Este e-mail já está em uso.');
-    }
-
-    const existingUserByUsername = await userModel.findUserByUsername(username);
-    if (existingUserByUsername) {
-        throw new Error('Este nome de usuário já está em uso.');
-    }
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    const newUser = await userModel.createUser({
-        username,
-        email,
-        password: hashedPassword,
-    });
-
-    return newUser;
+const registerUser = async (username, email, password, role = 'user') => {
+    return userService.createUser(username, email, password, role);
 };
 
 /**
@@ -63,7 +35,7 @@ const loginUser = async (username, password) => {
     }
 
     const userPayload = {
-        id: user.id,
+        id: user._id,
         username: user.username,
         email: user.email,
         role: user.role,
@@ -71,6 +43,8 @@ const loginUser = async (username, password) => {
 
     // Geração do token JWT
     const token = jwt.sign(userPayload, JWT_SECRET, { expiresIn: '1h' });
+    console.log('Generated JWT token for user:', userPayload.username);
+    console.log('Token:', token);
 
     return { token, userPayload };
 };

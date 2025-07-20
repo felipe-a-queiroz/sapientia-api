@@ -4,7 +4,7 @@ import authService from '../services/authService.js';
  * Registro de novo usuário
  */
 export const register = async (req, res) => {
-    const { username, email, password } = req.body;
+    const { username, email, password, role } = req.body;
 
     if (!username || !email || !password) {
         return res.status(400).json({
@@ -13,11 +13,17 @@ export const register = async (req, res) => {
     }
 
     try {
-        const user = await authService.registerUser(username, email, password);
+        const user = await authService.registerUser(
+            username,
+            email,
+            password,
+            role
+        );
         const userResponse = {
             id: user.id,
             username: user.username,
             email: user.email,
+            role: user.role,
         };
         return res.status(201).json({
             message: 'Usuário registrado com sucesso!',
@@ -33,7 +39,6 @@ export const register = async (req, res) => {
  */
 export const login = async (req, res) => {
     const { username, password } = req.body;
-
     if (!username || !password) {
         return res
             .status(400)
@@ -54,44 +59,6 @@ export const login = async (req, res) => {
         return userResponse;
     } catch (error) {
         return res.status(401).json({ message: error.message });
-    }
-};
-
-/**
- * Rota protegida de perfil
- */
-export const getProfile = (req, res) => {
-    if (!req.user) {
-        return res.status(401).json({ message: 'Não autenticado.' });
-    }
-
-    res.json({
-        message: `Bem-vindo ao seu perfil, ${req.user.username} (ID: ${req.user.id})`,
-        user: req.user,
-    });
-};
-
-export const updateProfile = async (req, res) => {
-    const { username, email } = req.body;
-
-    if (!username || !email) {
-        return res.status(400).json({
-            message: 'Nome de usuário e e-mail são obrigatórios.',
-        });
-    }
-
-    try {
-        const updatedUser = await authService.updateUserProfile(
-            req.user.id,
-            username,
-            email
-        );
-        return res.json({
-            message: 'Perfil atualizado com sucesso!',
-            user: updatedUser,
-        });
-    } catch (error) {
-        return res.status(400).json({ message: error.message });
     }
 };
 

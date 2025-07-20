@@ -5,6 +5,7 @@ export const getUsers = async (req, res) => {
         const users = await userService.getAllUsers();
         res.json(users);
     } catch (error) {
+        console.error('Erro ao buscar usuários:', error);
         res.status(500).json({ message: 'Erro ao buscar usuários.' });
     }
 };

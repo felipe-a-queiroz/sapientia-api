@@ -1,6 +1,7 @@
 import userModel from '../models/userModel.js';
 import validator from 'validator';
 import bcrypt from 'bcryptjs';
+import { v4 as uuidv4 } from 'uuid';
 
 const getAllUsers = async () => {
     const users = await userModel.findAllUsers();
@@ -36,7 +37,10 @@ const createUser = async (username, email, password, role = 'user') => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    const uuid = uuidv4();
+
     const newUser = await userModel.createUser({
+        _id: uuid,
         username,
         email,
         password: hashedPassword,
@@ -58,6 +62,17 @@ const updateUser = async (id, { username, email, role }) => {
     return updatedUser;
 };
 
+const updateUserProfile = async (id, { username, email }) => {
+    if (!username || !email) {
+        throw new Error('Nome de usuário e e-mail são obrigatórios.');
+    }
+    const updatedUser = await userModel.updateUser(id, {
+        username,
+        email,
+    });
+    return updatedUser;
+};
+
 const deleteUser = async (id) => {
     const user = await userModel.findUserById(id);
     if (!user) {
@@ -71,5 +86,6 @@ export default {
     getAllUsers,
     createUser,
     updateUser,
+    updateUserProfile,
     deleteUser,
 };

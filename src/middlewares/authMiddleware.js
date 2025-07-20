@@ -48,6 +48,7 @@ const authenticateToken = async (req, res, next) => {
 
         next();
     } catch (error) {
+        console.error('Erro ao verificar o token:', error);
         return res.status(401).json({ message: 'Token inválido ou expirado.' });
     }
 };
